@@ -1,0 +1,4 @@
+[submodule "ascii_painter_engine"]
+	path = ascii_painter_engine
+	url = ../ascii_painter_engine.git
+	branch = master
