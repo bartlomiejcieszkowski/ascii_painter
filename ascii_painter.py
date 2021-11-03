@@ -11,7 +11,7 @@ def main():
 
     # TODO: Percent of window, fill
     pane = ape.ConsoleWidgets.Pane(console_view=console_view, x=0, y=1, height=100, width=100,
-                                   alignment=ape.ConsoleWidgetAlignment.LEFT_TOP, percent=True)
+                                   alignment=ape.Alignment.LeftTop, dimensions=ape.DimensionsFlag.Relative)
     pane.title = 'ASCII Painter'
 
     console_view.add_widget(pane)
