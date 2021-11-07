@@ -44,7 +44,7 @@ def main():
     pane.title = 'ASCII Painter'
 
     color_pane = Colors8BitPalette(console_view=console_view, x=0, y=0,
-                                   alignment=ape.Alignment.FloatRightBottom,
+                                   alignment=ape.Alignment.RightBottom,
                                    dimensions=ape.DimensionsFlag.Absolute)
     pane.add_widget(color_pane)
 
