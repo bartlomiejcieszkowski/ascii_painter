@@ -72,12 +72,15 @@ def main():
                                    borderless=False)
     pane.title = 'ASCII Painter'
 
-    widget = Colors8BitPalette(console_view=console_view, x=0, y=0,
+    row = -1
+    col = -1
+    widget = Colors8BitPalette(console_view=console_view, x=col, y=row,
                                alignment=ape.Alignment.RightBottom,
                                dimensions=ape.DimensionsFlag.Absolute)
     pane.add_widget(widget)
 
-    widget = BrushWidget(console_view=console_view, x=17, y=0,
+    col += 17
+    widget = BrushWidget(console_view=console_view, x=col, y=row,
                          alignment=ape.Alignment.RightBottom,
                          dimensions=ape.DimensionsFlag.Absolute)
 
