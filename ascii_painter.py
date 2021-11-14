@@ -10,6 +10,7 @@ class AsciiPainter:
     def __init__(self):
         self.color = ape.ConsoleColor(ape.Color(15, ape.ColorBits.Bit8), ape.Color(1, ape.ColorBits.Bit8))
         self.brush_widget = None
+        self.console_view = None
 
 
     def invalidate(self):
@@ -72,6 +73,7 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
             return
         # raise Exception(color)
         self.ascii_painter.color.fgcolor = color
+        #self.ascii_painter.console_view.requires_draw = True
         self.ascii_painter.brush_widget.draw()
 
 
@@ -108,34 +110,36 @@ class BrushWidget(ape.ConsoleWidgets.BorderWidget):
 
 
 def main():
-    console_view = ape.ConsoleView(debug=True)
-    console_view.color_mode()
+
 
     ascii_painter = AsciiPainter()
 
+    ascii_painter.console_view = ape.ConsoleView(debug=True)
+    ascii_painter.console_view.color_mode()
+
     # TODO: Percent of window, fill
-    pane = ape.ConsoleWidgets.Pane(console_view=console_view, x=0, y=0, height=100, width=100,
+    pane = ape.ConsoleWidgets.Pane(console_view=ascii_painter.console_view, x=0, y=0, height=100, width=100,
                                    alignment=ape.Alignment.LeftTop, dimensions=ape.DimensionsFlag.Relative,
                                    borderless=False)
     pane.title = 'ASCII Painter'
 
     row = -1
     col = -1
-    widget = Colors8BitPalette(console_view=console_view, x=col, y=row,
+    widget = Colors8BitPalette(console_view=ascii_painter.console_view, x=col, y=row,
                                alignment=ape.Alignment.RightBottom,
                                dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
     pane.add_widget(widget)
 
     col += 17
-    ascii_painter.brush_widget = BrushWidget(console_view=console_view, x=col, y=row,
+    ascii_painter.brush_widget = BrushWidget(console_view=ascii_painter.console_view, x=col, y=row,
                          alignment=ape.Alignment.RightBottom,
                          dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
 
     pane.add_widget(ascii_painter.brush_widget)
 
-    console_view.add_widget(pane)
+    ascii_painter.console_view.add_widget(pane)
 
-    console_view.loop(True)
+    ascii_painter.console_view.loop(True)
 
 
 if __name__ == '__main__':
