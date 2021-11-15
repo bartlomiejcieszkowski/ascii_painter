@@ -12,7 +12,6 @@ class AsciiPainter:
         self.brush_widget = None
         self.console_view = None
 
-
     def invalidate(self):
         self.pane
 
@@ -48,7 +47,6 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
                 line += self.console_view.brush.BgColor(color=color) + '  '
             self.console_view.brush.print(line + self.console_view.brush.ResetColor(), end='')
 
-
     def coord_to_color(self, coords: Tuple[int, int]):
         border = 0 if self.borderless else 1
         offset_rows = self.last_dimensions.row + border
@@ -73,7 +71,7 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
             return
         # raise Exception(color)
         self.ascii_painter.color.fgcolor = color
-        #self.ascii_painter.console_view.requires_draw = True
+        # self.ascii_painter.console_view.requires_draw = True
         self.ascii_painter.brush_widget.draw()
 
 
@@ -102,16 +100,16 @@ class BrushWidget(ape.ConsoleWidgets.BorderWidget):
         # fgcolor
 
         self.console_view.brush.MoveCursor(row=offset_rows)
-        self.console_view.brush.print(offset_str + self.console_view.brush.BgColor(color=self.ascii_painter.color.fgcolor) + ' ' * width + self.console_view.brush.ResetColor(), end='')
+        self.console_view.brush.print(offset_str + self.console_view.brush.BgColor(
+            color=self.ascii_painter.color.fgcolor) + ' ' * width + self.console_view.brush.ResetColor(), end='')
 
         # bgcolor
-        self.console_view.brush.MoveCursor(row=offset_rows+1)
-        self.console_view.brush.print(offset_str + self.console_view.brush.BgColor(color=self.ascii_painter.color.bgcolor) + ' ' * width + self.console_view.brush.ResetColor(), end='')
+        self.console_view.brush.MoveCursor(row=offset_rows + 1)
+        self.console_view.brush.print(offset_str + self.console_view.brush.BgColor(
+            color=self.ascii_painter.color.bgcolor) + ' ' * width + self.console_view.brush.ResetColor(), end='')
 
 
 def main():
-
-
     ascii_painter = AsciiPainter()
 
     ascii_painter.console_view = ape.ConsoleView(debug=True)
@@ -132,8 +130,8 @@ def main():
 
     col += 17
     ascii_painter.brush_widget = BrushWidget(console_view=ascii_painter.console_view, x=col, y=row,
-                         alignment=ape.Alignment.RightBottom,
-                         dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
+                                             alignment=ape.Alignment.RightBottom,
+                                             dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
 
     pane.add_widget(ascii_painter.brush_widget)
 
