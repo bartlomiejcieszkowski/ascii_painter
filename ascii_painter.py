@@ -111,8 +111,8 @@ class BrushWidget(ape.ConsoleWidgets.BorderWidget):
 
 def main():
     ascii_painter = AsciiPainter()
-
-    ascii_painter.console_view = ape.ConsoleView(debug=True)
+    ape.log.log_file('ascii_painter')
+    ascii_painter.console_view = ape.ConsoleView(log=ape.log.log)
     ascii_painter.console_view.color_mode()
 
     # TODO: Percent of window, fill
