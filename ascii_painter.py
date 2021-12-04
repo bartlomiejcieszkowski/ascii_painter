@@ -3,6 +3,8 @@ from typing import Tuple
 
 import ascii_painter_engine as ape
 
+import argparse
+
 print('success!')
 
 
@@ -110,8 +112,19 @@ class BrushWidget(ape.ConsoleWidgets.BorderWidget):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--debug', action='store_true', help='enables debug log')
+    parser.add_argument('--toolbar-top', action='store_true', help='toolbar would be on top, default is bottom')
+
+    args = parser.parse_args()
+
+
+
     ascii_painter = AsciiPainter()
-    ape.log.log_file('ascii_painter')
+
+    if args.debug:
+        ape.log.log_file('ascii_painter')
+
     ascii_painter.console_view = ape.ConsoleView(log=ape.log.log)
     ascii_painter.console_view.color_mode()
 
@@ -121,19 +134,27 @@ def main():
                                    borderless=False)
     pane.title = 'ASCII Painter'
 
+    toolbar_alignment = ape.Alignment.LeftTop if args.toolbar_top else ape.Alignment.LeftBottom
+
+    toolbar = ape.ConsoleWidgets.Pane(console_view=ascii_painter.console_view, x=0, y=0, height=4, width=100,
+                                            alignment=toolbar_alignment,
+                                            dimensions=ape.DimensionsFlag.RelativeWidth)
+
     row = -1
     col = -1
     widget = Colors8BitPalette(console_view=ascii_painter.console_view, x=col, y=row,
                                alignment=ape.Alignment.RightBottom,
                                dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
-    pane.add_widget(widget)
+    toolbar.add_widget(widget)
 
     col += 17
     ascii_painter.brush_widget = BrushWidget(console_view=ascii_painter.console_view, x=col, y=row,
                                              alignment=ape.Alignment.RightBottom,
                                              dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
 
-    pane.add_widget(ascii_painter.brush_widget)
+    toolbar.add_widget(ascii_painter.brush_widget)
+
+    pane.add_widget(toolbar)
 
     ascii_painter.console_view.add_widget(pane)
 
