@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 from typing import Tuple
 
 import ascii_painter_engine as ape
@@ -111,14 +112,35 @@ class BrushWidget(ape.ConsoleWidgets.BorderWidget):
             color=self.ascii_painter.color.bgcolor) + ' ' * width + self.console_view.brush.ResetColor(), end='')
 
 
+class Canvas(ape.ConsoleWidgets.BorderWidget):
+    def __init__(self, console_view, x: int, y: int, width: int, height: int,
+                 alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
+                 borderless: bool = False, ascii_painter: AsciiPainter = None):
+        self.canvas_width = width
+        self.canvas_height = height
+        border = (0 if borderless else 2)
+        widget_width = width + border
+        widget_height = height + border
+        super().__init__(console_view=console_view, x=x, y=y, width=widget_width, height=widget_height, alignment=alignment,
+                         dimensions=dimensions, borderless=borderless)
+        self.title = 'Canvas'
+        self.ascii_painter = ascii_painter
+
+    def draw(self):
+        super().draw()
+
+
+DEFAULT_HEIGHT = 10
+DEFAULT_WIDTH = 32
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--debug', action='store_true', help='enables debug log')
     parser.add_argument('--toolbar-top', action='store_true', help='toolbar would be on top, default is bottom')
+    parser.add_argument('-s', '--size', type=str, default=None)
 
     args = parser.parse_args()
-
-
 
     ascii_painter = AsciiPainter()
 
@@ -127,6 +149,21 @@ def main():
 
     ascii_painter.console_view = ape.ConsoleView(log=ape.log.log)
     ascii_painter.console_view.color_mode()
+
+    height = DEFAULT_HEIGHT
+    width = DEFAULT_WIDTH
+
+    if args.size:
+        try:
+            w_x_h = args.size.split('x')
+            if len(w_x_h) != 2:
+                raise Exception('expected {int}x{int} string')
+            width = int(w_x_h[0], 10)
+            height = int(w_x_h[1], 10)
+        except Exception as ex:
+            print(ex, file=sys.stderr)
+            return -1
+
 
     # TODO: Percent of window, fill
     pane = ape.ConsoleWidgets.Pane(console_view=ascii_painter.console_view, x=0, y=0, height=100, width=100,
@@ -137,8 +174,8 @@ def main():
     toolbar_alignment = ape.Alignment.LeftTop if args.toolbar_top else ape.Alignment.LeftBottom
 
     toolbar = ape.ConsoleWidgets.Pane(console_view=ascii_painter.console_view, x=0, y=0, height=4, width=100,
-                                            alignment=toolbar_alignment,
-                                            dimensions=ape.DimensionsFlag.RelativeWidth)
+                                      alignment=toolbar_alignment,
+                                      dimensions=ape.DimensionsFlag.RelativeWidth)
 
     row = -1
     col = -1
@@ -154,12 +191,20 @@ def main():
 
     toolbar.add_widget(ascii_painter.brush_widget)
 
+    canvas = Canvas(console_view=ascii_painter.console_view, x=0, y=0, height=height, width=width,
+                    alignment=ape.Alignment.LeftTop,
+                    dimensions=ape.DimensionsFlag.Absolute, # Fill fails atm
+                    ascii_painter=ascii_painter)
+
     pane.add_widget(toolbar)
+    pane.add_widget(canvas)
 
     ascii_painter.console_view.add_widget(pane)
 
     ascii_painter.console_view.loop(True)
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    ret = main()
+    sys.exit(ret)
