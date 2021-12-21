@@ -50,26 +50,18 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
                 line += self.console_view.brush.BgColor(color=color) + '  '
             self.console_view.brush.print(line + self.console_view.brush.ResetColor(), end='')
 
-    def coord_to_color(self, coords: Tuple[int, int]):
-        border = 0 if self.borderless else 1
-        offset_rows = self.last_dimensions.row + border
-        offset_cols = self.last_dimensions.column + border
-        width = self.last_dimensions.width - (border * 2)
-        height = self.last_dimensions.height - (border * 2)
+    def point_to_color(self, point: Tuple[int, int]):
+        local_row, local_column = self.local_point(point)
 
-        local_row = coords[0] - offset_rows
-        local_column = coords[1] - offset_cols
-
-        # raise Exception(f'w: {width} h: {height} col: {local_column} row: {local_row}')
-        if local_column < 0 or local_column >= width or local_row < 0 or local_row >= height:
+        if local_row is None or local_column is None:
             return None
 
         color_idx = local_row * 8 + (local_column // 2)
         return ape.Color(color_idx, ape.ColorBits.Bit8)
 
-    def handle(self, event: ape.Event, coords: Tuple[int, int]):
+    def handle(self, event: ape.Event, point: Tuple[int, int]):
         # TODO: properly pass whole event
-        color = self.coord_to_color(coords)
+        color = self.point_to_color(point)
         if color is None:
             return
         # raise Exception(color)
@@ -112,6 +104,12 @@ class BrushWidget(ape.ConsoleWidgets.BorderWidget):
             color=self.ascii_painter.color.bgcolor) + ' ' * width + self.console_view.brush.ResetColor(), end='')
 
 
+class CanvasCell:
+    def __init__(self, value, color: ape.ConsoleColor):
+        self.value = value
+        self.color = color
+
+
 class Canvas(ape.ConsoleWidgets.BorderWidget):
     def __init__(self, console_view, x: int, y: int, width: int, height: int,
                  alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
@@ -125,9 +123,44 @@ class Canvas(ape.ConsoleWidgets.BorderWidget):
                          dimensions=dimensions, borderless=borderless)
         self.title = 'Canvas'
         self.ascii_painter = ascii_painter
+        self.cells = [[CanvasCell(' ', ape.ConsoleColor()) for cell in range(self.canvas_width)] for row in range(self.canvas_height)]
 
     def draw(self):
         super().draw()
+        border = 0 if self.borderless else 1
+        offset_rows = self.last_dimensions.row + border
+        offset_cols = self.last_dimensions.column + border
+        offset_str = self.console_view.brush.MoveRight(offset_cols)
+        for y in range(self.canvas_height):
+            self.console_view.brush.MoveCursor(row=offset_rows + y)
+
+            row = self.cells[y]
+            line = offset_str
+            for x in range(self.canvas_width):
+                line += self.console_view.brush.FgBgColor(row[x].color) + row[x].value[0]
+            line += self.console_view.brush.ResetColor()
+            self.console_view.brush.print(line, end='')
+
+    def draw_cell(self, row: int, column: int):
+        border = 0 if self.borderless else 1
+        offset_rows = self.last_dimensions.row + border
+        offset_cols = self.last_dimensions.column + border
+        offset_str = self.console_view.brush.MoveRight(offset_cols + column)
+        self.console_view.brush.MoveCursor(row=offset_rows + row)
+        cell = self.cells[row][column]
+        line = offset_str + self.console_view.brush.FgBgColor(cell.color) + cell.value + self.console_view.brush.ResetColor()
+        self.console_view.brush.print(line, end='')
+
+    def handle(self, event: ape.Event, point: Tuple[int, int]):
+        local_row, local_column = self.local_point(point)
+
+        if local_row is None or local_column is None:
+            return
+
+        self.cells[local_row][local_column].color.fgcolor = self.ascii_painter.color.fgcolor
+        self.cells[local_row][local_column].color.bgcolor = self.ascii_painter.color.fgcolor
+
+        self.draw_cell(local_row, local_column)
 
 
 DEFAULT_HEIGHT = 10
