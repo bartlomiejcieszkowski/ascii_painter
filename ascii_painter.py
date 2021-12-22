@@ -51,7 +51,7 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
             self.console_view.brush.print(line + self.console_view.brush.ResetColor(), end='')
 
     def point_to_color(self, point: Tuple[int, int]):
-        local_row, local_column = self.local_point(point)
+        local_column, local_row = self.local_point(point)
 
         if local_row is None or local_column is None:
             return None
@@ -59,15 +59,16 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
         color_idx = local_row * 8 + (local_column // 2)
         return ape.Color(color_idx, ape.ColorBits.Bit8)
 
-    def handle(self, event: ape.Event, point: Tuple[int, int]):
-        # TODO: properly pass whole event
-        color = self.point_to_color(point)
-        if color is None:
-            return
-        # raise Exception(color)
-        self.ascii_painter.color.fgcolor = color
-        # self.ascii_painter.console_view.requires_draw = True
-        self.ascii_painter.brush_widget.draw()
+    def handle(self, event):
+        if isinstance(event, ape.MouseEvent):
+            if event.button == event.button.LMB and not event.pressed:
+                color = self.point_to_color(event.coordinates)
+                if color is None:
+                    return
+                # raise Exception(color)
+                self.ascii_painter.color.fgcolor = color
+                # self.ascii_painter.console_view.requires_draw = True
+                self.ascii_painter.brush_widget.draw()
 
 
 class BrushWidget(ape.ConsoleWidgets.BorderWidget):
@@ -151,16 +152,17 @@ class Canvas(ape.ConsoleWidgets.BorderWidget):
         line = offset_str + self.console_view.brush.FgBgColor(cell.color) + cell.value + self.console_view.brush.ResetColor()
         self.console_view.brush.print(line, end='')
 
-    def handle(self, event: ape.Event, point: Tuple[int, int]):
-        local_row, local_column = self.local_point(point)
+    def handle(self, event):
+        if isinstance(event, ape.MouseEvent):
+            if event.button == event.button.LMB and event.pressed:
+                local_column, local_row = self.local_point(event.coordinates)
+                if local_row is None or local_column is None:
+                    return
 
-        if local_row is None or local_column is None:
-            return
+                self.cells[local_row][local_column].color.fgcolor = self.ascii_painter.color.fgcolor
+                self.cells[local_row][local_column].color.bgcolor = self.ascii_painter.color.fgcolor
 
-        self.cells[local_row][local_column].color.fgcolor = self.ascii_painter.color.fgcolor
-        self.cells[local_row][local_column].color.bgcolor = self.ascii_painter.color.fgcolor
-
-        self.draw_cell(local_row, local_column)
+                self.draw_cell(local_row, local_column)
 
 
 DEFAULT_HEIGHT = 10
