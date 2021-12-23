@@ -174,6 +174,7 @@ def main():
     parser.add_argument('--debug', action='store_true', help='enables debug log')
     parser.add_argument('--toolbar-top', action='store_true', help='toolbar would be on top, default is bottom')
     parser.add_argument('-s', '--size', type=str, default=None)
+    parser.add_argument('--input-txt', type=str, default=None, help='txt file with ascii art, eg. jp2a output')
 
     args = parser.parse_args()
 
@@ -188,6 +189,13 @@ def main():
     height = DEFAULT_HEIGHT
     width = DEFAULT_WIDTH
 
+    if args.input_txt:
+        # TODO
+        # load file
+        # while loading remember to find longest line
+        # count of lines is height
+        pass
+
     if args.size:
         try:
             w_x_h = args.size.split('x')
@@ -198,7 +206,6 @@ def main():
         except Exception as ex:
             print(ex, file=sys.stderr)
             return -1
-
 
     # TODO: Percent of window, fill
     pane = ape.ConsoleWidgets.Pane(console_view=ascii_painter.console_view, x=0, y=0, height=100, width=100,
