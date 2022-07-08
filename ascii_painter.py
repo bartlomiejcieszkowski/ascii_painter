@@ -61,12 +61,15 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
 
     def handle(self, event):
         if isinstance(event, ape.MouseEvent):
-            if event.button == event.button.LMB and not event.pressed:
+            if event.button in [event.button.LMB, event.button.RMB] and not event.pressed:
                 color = self.point_to_color(event.coordinates)
                 if color is None:
                     return
                 # raise Exception(color)
-                self.ascii_painter.color.fgcolor = color
+                if event.button == event.button.LMB:
+                    self.ascii_painter.color.fgcolor = color
+                elif event.button == event.button.RMB:
+                    self.ascii_painter.color.bgcolor = color
                 # self.ascii_painter.console_view.requires_draw = True
                 self.ascii_painter.brush_widget.draw()
 
@@ -154,13 +157,15 @@ class Canvas(ape.ConsoleWidgets.BorderWidget):
 
     def handle(self, event):
         if isinstance(event, ape.MouseEvent):
-            if event.button == event.button.LMB and event.pressed:
+            if event.button in [event.button.LMB, event.button.RMB] and event.pressed:
                 local_column, local_row = self.local_point(event.coordinates)
                 if local_row is None or local_column is None:
                     return
 
-                self.cells[local_row][local_column].color.fgcolor = self.ascii_painter.color.fgcolor
-                self.cells[local_row][local_column].color.bgcolor = self.ascii_painter.color.fgcolor
+                brush_color = self.ascii_painter.color.fgcolor if event.button == event.button.LMB else self.ascii_painter.color.bgcolor
+
+                self.cells[local_row][local_column].color.fgcolor = brush_color
+                self.cells[local_row][local_column].color.bgcolor = brush_color
 
                 self.draw_cell(local_row, local_column)
 
