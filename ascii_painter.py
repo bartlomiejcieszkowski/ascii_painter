@@ -3,6 +3,7 @@ import sys
 from typing import Tuple
 
 import ascii_painter_engine as ape
+from ascii_painter_engine.widget import BorderWidget, Pane
 
 import argparse
 
@@ -19,7 +20,7 @@ class AsciiPainter:
         self.pane
 
 
-class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
+class Colors8BitPalette(BorderWidget):
     def __init__(self, app, x: int, y: int,
                  alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
@@ -74,7 +75,7 @@ class Colors8BitPalette(ape.ConsoleWidgets.BorderWidget):
                 self.ascii_painter.brush_widget.draw()
 
 
-class BrushWidget(ape.ConsoleWidgets.BorderWidget):
+class BrushWidget(BorderWidget):
     def __init__(self, app, x: int, y: int,
                  alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
@@ -114,7 +115,7 @@ class CanvasCell:
         self.color = color
 
 
-class Canvas(ape.ConsoleWidgets.BorderWidget):
+class Canvas(BorderWidget):
     def __init__(self, app, x: int, y: int, width: int, height: int,
                  alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
@@ -127,7 +128,8 @@ class Canvas(ape.ConsoleWidgets.BorderWidget):
                          dimensions=dimensions, borderless=borderless)
         self.title = 'Canvas'
         self.ascii_painter = ascii_painter
-        self.cells = [[CanvasCell(' ', ape.ConsoleColor()) for cell in range(self.canvas_width)] for row in range(self.canvas_height)]
+        self.cells = [[CanvasCell(' ', ape.ConsoleColor()) for cell in range(self.canvas_width)] for row in
+                      range(self.canvas_height)]
 
     def draw(self):
         super().draw()
@@ -213,16 +215,16 @@ def main():
             return -1
 
     # TODO: Percent of window, fill
-    pane = ape.ConsoleWidgets.Pane(app=ascii_painter.app, x=0, y=0, height=100, width=100,
-                                   alignment=ape.Alignment.LeftTop, dimensions=ape.DimensionsFlag.Relative,
-                                   borderless=False)
+    pane = Pane(app=ascii_painter.app, x=0, y=0, height=100, width=100,
+                alignment=ape.Alignment.LeftTop, dimensions=ape.DimensionsFlag.Relative,
+                borderless=False)
     pane.title = 'ASCII Painter'
 
     toolbar_alignment = ape.Alignment.LeftTop if args.toolbar_top else ape.Alignment.LeftBottom
 
-    toolbar = ape.ConsoleWidgets.Pane(app=ascii_painter.app, x=0, y=0, height=4, width=100,
-                                      alignment=toolbar_alignment,
-                                      dimensions=ape.DimensionsFlag.RelativeWidth)
+    toolbar = Pane(app=ascii_painter.app, x=0, y=0, height=4, width=100,
+                   alignment=toolbar_alignment,
+                   dimensions=ape.DimensionsFlag.RelativeWidth)
 
     row = -1
     col = -1
