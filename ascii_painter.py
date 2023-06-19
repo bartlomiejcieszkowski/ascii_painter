@@ -21,6 +21,18 @@ class AsciiPainter:
 
 
 class Colors8BitPalette(BorderWidget):
+    @classmethod
+    def from_dict(cls, **kwargs):
+        return cls(
+            app=kwargs.pop("app"),
+            x=kwargs.pop("x"),
+            y=kwargs.pop("y"),
+            alignment=kwargs.pop("alignment", None),
+            dimensions=kwargs.pop("dimensions", "Absolute"),
+            borderless=kwargs.pop("borderless", False),
+            ascii_painter=kwargs.pop("ascii_painter", None)
+        )
+
     def __init__(self, app, x: int, y: int,
                  alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
@@ -76,6 +88,18 @@ class Colors8BitPalette(BorderWidget):
 
 
 class BrushWidget(BorderWidget):
+    @classmethod
+    def from_dict(cls, **kwargs):
+        return cls(
+            app=kwargs.pop("app"),
+            x=kwargs.pop("x"),
+            y=kwargs.pop("y"),
+            alignment=kwargs.pop("alignment", None),
+            dimensions=kwargs.pop("dimensions", "Absolute"),
+            borderless=kwargs.pop("borderless", False),
+            ascii_painter=kwargs.pop("ascii_painter", None)
+        )
+
     def __init__(self, app, x: int, y: int,
                  alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
@@ -116,6 +140,20 @@ class CanvasCell:
 
 
 class Canvas(BorderWidget):
+    @classmethod
+    def from_dict(cls, **kwargs):
+        return cls(
+            app=kwargs.pop("app"),
+            x=kwargs.pop("x"),
+            y=kwargs.pop("y"),
+            width=kwargs.pop("width"),
+            height=kwargs.pop("height"),
+            alignment=kwargs.pop("alignment", None),
+            dimensions=kwargs.pop("dimensions", "Absolute"),
+            borderless=kwargs.pop("borderless", False),
+            ascii_painter=kwargs.pop("ascii_painter", None)
+        )
+
     def __init__(self, app, x: int, y: int, width: int, height: int,
                  alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
