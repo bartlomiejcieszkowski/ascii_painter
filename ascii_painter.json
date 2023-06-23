@@ -1,0 +1,67 @@
+{
+  "name": "ascii_painter",
+  "_desc_name": "name of the application",
+  "title": "",
+  "_desc_title": "if the title is empty or doesn't exist then the name will be used",
+  "color": true,
+  "_decs_color": "can be omitted, defaults to true, if the app is supposed to use default console color set to false",
+  "widgets": [
+    {
+      "id": "main_pane",
+      "tab_index": 2,
+      "type": "Pane",
+      "title": "ASCII Painter",
+      "x": 0,
+      "y": 0,
+      "height": 100,
+      "width": 100,
+      "alignment": "LeftTop",
+      "dimensions": "Relative"
+    },
+    {
+      "parent_id": "main_pane",
+      "id": "toolbar",
+      "tab_index": 2,
+      "type": "Pane",
+      "x": 0,
+      "y": 0,
+      "height": 4,
+      "width": 100,
+      "alignment": "__main#toolbar_alignment",
+      "dimensions": "RelativeWidth"
+    },
+    {
+      "parent_id": "toolbar",
+      "id": "color_palette",
+      "type": "Colors8BitPalette",
+      "x": -1,
+      "y": -1,
+      "alignment": "RightBottom",
+      "dimensions": "Absolute",
+      "ascii_painter": "__main#ascii_painter"
+    },
+    {
+      "parent_id": "toolbar",
+      "id": "brush_widget",
+      "type": "BrushWidget",
+      "x": 16,
+      "y": -1,
+      "alignment": "RightBottom",
+      "dimensions": "Absolute",
+      "ascii_painter": "__main#ascii_painter"
+    },
+    {
+      "parent_id": "main_pane",
+      "id": "canvas",
+      "tab_index": 2,
+      "type": "Canvas",
+      "x": 0,
+      "y": 0,
+      "height": "__main#height",
+      "width": "__main#width",
+      "alignment": "LeftTop",
+      "dimensions": "Absolute",
+      "ascii_painter": "__main#ascii_painter"
+    }
+  ]
+}
