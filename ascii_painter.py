@@ -3,7 +3,9 @@ import sys
 from typing import Tuple
 
 import ascii_painter_engine as ape
+from ascii_painter_engine import helper
 from ascii_painter_engine.widget import BorderWidget, Pane
+from ascii_painter_engine import logger
 
 import argparse
 
@@ -214,21 +216,13 @@ DEFAULT_HEIGHT = 10
 DEFAULT_WIDTH = 32
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug', action='store_true', help='enables debug log')
-    parser.add_argument('--toolbar-top', action='store_true', help='toolbar would be on top, default is bottom')
-    parser.add_argument('-s', '--size', type=str, default=None)
-    parser.add_argument('--input-txt', type=str, default=None, help='txt file with ascii art, eg. jp2a output')
-
-    args = parser.parse_args()
-
+def main(args):
     ascii_painter = AsciiPainter()
 
     if args.debug:
-        ape.log.log_file('ascii_painter')
+        ape.logger.log_file('ascii_painter')
 
-    ascii_painter.app = ape.App(log=ape.log.log)
+    ascii_painter.app = ape.App(log=ape.logger.log)
     ascii_painter.app.color_mode()
 
     height = DEFAULT_HEIGHT
@@ -275,7 +269,7 @@ def main():
     ascii_painter.brush_widget = BrushWidget(app=ascii_painter.app, x=col, y=row,
                                              alignment=ape.Alignment.RightBottom,
                                              dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
-
+    # TODO: brush_widget is not store in json version
     toolbar.add_widget(ascii_painter.brush_widget)
 
     canvas = Canvas(app=ascii_painter.app, x=0, y=0, height=height, width=width,
@@ -292,6 +286,59 @@ def main():
     return 0
 
 
+def main_json(args):
+    toolbar_alignment = ape.Alignment.LeftTop if args.toolbar_top else ape.Alignment.LeftBottom
+
+    height = DEFAULT_HEIGHT
+    width = DEFAULT_WIDTH
+
+    if args.size:
+        try:
+            w_x_h = args.size.split('x')
+            if len(w_x_h) != 2:
+                raise Exception('expected {int}x{int} string')
+            width = int(w_x_h[0], 10)
+            height = int(w_x_h[1], 10)
+        except Exception as ex:
+            print(ex, file=sys.stderr)
+            return -1
+
+    ascii_painter = AsciiPainter()
+
+    if args.input_txt:
+        # TODO
+        # load file
+        # while loading remember to find longest line
+        # count of lines is height
+        pass
+
+    helper.register_app_dict("main", {
+        "ascii_painter": ascii_painter,
+        "toolbar_alignment": toolbar_alignment,
+        "height": height,
+        "width": width
+    })
+
+    if args.debug:
+        ape.logger.log_file('ascii_painter')
+
+    ascii_painter.app = helper.app_from_json("ascii_painter.json", globals())
+
+    ascii_painter.app.log = ape.logger.log
+    ascii_painter.app.run()
+    return 0
+
+
+
 if __name__ == '__main__':
-    ret = main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--debug', action='store_true', help='enables debug log')
+    parser.add_argument('--toolbar-top', action='store_true', help='toolbar would be on top, default is bottom')
+    parser.add_argument('-s', '--size', type=str, default=None)
+    parser.add_argument('--input-txt', type=str, default=None, help='txt file with ascii art, eg. jp2a output')
+    parser.add_argument('--json', action='store_true')
+    args = parser.parse_args()
+
+    main_fun = main_json if args.json else main
+    ret = main_fun(args)
     sys.exit(ret)
