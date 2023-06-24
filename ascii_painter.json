@@ -48,7 +48,11 @@
       "y": -1,
       "alignment": "RightBottom",
       "dimensions": "Absolute",
-      "ascii_painter": "__main#ascii_painter"
+      "ascii_painter": "__main#ascii_painter",
+      "post_create_callbacks": [{
+        "function": "__main#bind_brush_fun",
+        "args": [ "##this", "__main#ascii_painter"]
+      }]
     },
     {
       "parent_id": "main_pane",

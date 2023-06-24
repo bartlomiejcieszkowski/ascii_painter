@@ -269,7 +269,7 @@ def main(args):
     ascii_painter.brush_widget = BrushWidget(app=ascii_painter.app, x=col, y=row,
                                              alignment=ape.Alignment.RightBottom,
                                              dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
-    # TODO: brush_widget is not store in json version
+
     toolbar.add_widget(ascii_painter.brush_widget)
 
     canvas = Canvas(app=ascii_painter.app, x=0, y=0, height=height, width=width,
@@ -284,6 +284,10 @@ def main(args):
 
     ascii_painter.app.run()
     return 0
+
+
+def bind_brush(brush_widget, ascii_painter):
+    ascii_painter.brush_widget = brush_widget
 
 
 def main_json(args):
@@ -316,7 +320,8 @@ def main_json(args):
         "ascii_painter": ascii_painter,
         "toolbar_alignment": toolbar_alignment,
         "height": height,
-        "width": width
+        "width": width,
+        "bind_brush_fun": bind_brush
     })
 
     if args.debug:
