@@ -324,7 +324,7 @@ def main_json(args):
         "bind_brush_fun": bind_brush
     })
 
-    if args.debug:
+    if not args.debug:
         ape.logger.log_file('ascii_painter')
 
     ascii_painter.app = helper.app_from_json("ascii_painter.json", globals())

@@ -49,7 +49,7 @@
       "alignment": "RightBottom",
       "dimensions": "Absolute",
       "ascii_painter": "__main#ascii_painter",
-      "post_create_callbacks": [{
+      "post_callbacks": [{
         "function": "__main#bind_brush_fun",
         "args": [ "##this", "__main#ascii_painter"]
       }]
