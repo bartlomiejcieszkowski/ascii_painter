@@ -3,7 +3,8 @@ import os.path
 import sys
 from typing import Tuple
 
-if os.path.exists(os.path.abspath("./dependencies/retui/src")):
+
+if os.environ.get("RETUI", "local") == "local" and os.path.exists(os.path.abspath("./dependencies/retui/src")):
     print("retui in submodule, using it")
     sys.path.append(os.path.abspath("./dependencies/retui/src"))
 
