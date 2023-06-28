@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
+import os.path
 import sys
 from typing import Tuple
 
-import ascii_painter_engine as ape
-from ascii_painter_engine import helper
-from ascii_painter_engine.widget import BorderWidget, Pane
-from ascii_painter_engine import logger
+if os.path.exists(os.path.abspath("./dependencies/retui")):
+    print("retui in submodule, using it")
+    sys.path.append(os.path.abspath("./dependencies/retui"))
+
+import retui
+from retui import helper
+from retui.widget import BorderWidget, Pane
+from retui import logger
 
 import argparse
-
-print('success!')
 
 
 class AsciiPainter:
     def __init__(self):
-        self.color = ape.ConsoleColor(ape.Color(15, ape.ColorBits.Bit8), ape.Color(1, ape.ColorBits.Bit8))
+        self.color = retui.ConsoleColor(retui.Color(15, retui.ColorBits.Bit8), retui.Color(1, retui.ColorBits.Bit8))
         self.brush_widget = None
         self.app = None
 
@@ -29,14 +32,14 @@ class Colors8BitPalette(BorderWidget):
             app=kwargs.pop("app"),
             x=kwargs.pop("x"),
             y=kwargs.pop("y"),
-            alignment=kwargs.pop("alignment", None),
-            dimensions=kwargs.pop("dimensions", "Absolute"),
+            alignment=retui.json_convert("alignment", kwargs.pop("alignment", None)),
+            dimensions=retui.json_convert("dimensions", kwargs.pop("dimensions", None)),
             borderless=kwargs.pop("borderless", False),
             ascii_painter=kwargs.pop("ascii_painter", None)
         )
 
     def __init__(self, app, x: int, y: int,
-                 alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
+                 alignment: retui.Alignment, dimensions: retui.DimensionsFlag = retui.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
         border = (0 if borderless else 2)
         width = 8 * 2 + border
@@ -56,7 +59,7 @@ class Colors8BitPalette(BorderWidget):
         start = 0
         end = height
         offset_str = self.app.brush.MoveRight(offset_cols)
-        color = ape.Color(0, ape.ColorBits.Bit8)
+        color = retui.Color(0, retui.ColorBits.Bit8)
         for h in range(start, end):
             self.app.brush.MoveCursor(row=offset_rows + h)
             line = offset_str
@@ -72,10 +75,10 @@ class Colors8BitPalette(BorderWidget):
             return None
 
         color_idx = local_row * 8 + (local_column // 2)
-        return ape.Color(color_idx, ape.ColorBits.Bit8)
+        return retui.Color(color_idx, retui.ColorBits.Bit8)
 
     def handle(self, event):
-        if isinstance(event, ape.MouseEvent):
+        if isinstance(event, retui.MouseEvent):
             if event.button in [event.button.LMB, event.button.RMB] and not event.pressed:
                 color = self.point_to_color(event.coordinates)
                 if color is None:
@@ -96,14 +99,14 @@ class BrushWidget(BorderWidget):
             app=kwargs.pop("app"),
             x=kwargs.pop("x"),
             y=kwargs.pop("y"),
-            alignment=kwargs.pop("alignment", None),
-            dimensions=kwargs.pop("dimensions", "Absolute"),
+            alignment=retui.json_convert("alignment", kwargs.pop("alignment", None)),
+            dimensions=retui.json_convert("dimensions", kwargs.pop("dimensions", None)),
             borderless=kwargs.pop("borderless", False),
             ascii_painter=kwargs.pop("ascii_painter", None)
         )
 
     def __init__(self, app, x: int, y: int,
-                 alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
+                 alignment: retui.Alignment, dimensions: retui.DimensionsFlag = retui.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
         border = (0 if borderless else 2)
         width = 3 * 2 + border
@@ -136,7 +139,7 @@ class BrushWidget(BorderWidget):
 
 
 class CanvasCell:
-    def __init__(self, value, color: ape.ConsoleColor):
+    def __init__(self, value, color: retui.ConsoleColor):
         self.value = value
         self.color = color
 
@@ -150,14 +153,14 @@ class Canvas(BorderWidget):
             y=kwargs.pop("y"),
             width=kwargs.pop("width"),
             height=kwargs.pop("height"),
-            alignment=kwargs.pop("alignment", None),
-            dimensions=kwargs.pop("dimensions", "Absolute"),
+            alignment=retui.json_convert("alignment", kwargs.pop("alignment", None)),
+            dimensions=retui.json_convert("dimensions", kwargs.pop("dimensions", None)),
             borderless=kwargs.pop("borderless", False),
             ascii_painter=kwargs.pop("ascii_painter", None)
         )
 
     def __init__(self, app, x: int, y: int, width: int, height: int,
-                 alignment: ape.Alignment, dimensions: ape.DimensionsFlag = ape.DimensionsFlag.Absolute,
+                 alignment: retui.Alignment, dimensions: retui.DimensionsFlag = retui.DimensionsFlag.Absolute,
                  borderless: bool = False, ascii_painter: AsciiPainter = None):
         self.canvas_width = width
         self.canvas_height = height
@@ -168,7 +171,7 @@ class Canvas(BorderWidget):
                          dimensions=dimensions, borderless=borderless)
         self.title = 'Canvas'
         self.ascii_painter = ascii_painter
-        self.cells = [[CanvasCell(' ', ape.ConsoleColor()) for cell in range(self.canvas_width)] for row in
+        self.cells = [[CanvasCell(' ', retui.ConsoleColor()) for cell in range(self.canvas_width)] for row in
                       range(self.canvas_height)]
 
     def draw(self):
@@ -198,7 +201,7 @@ class Canvas(BorderWidget):
         self.app.brush.print(line, end='')
 
     def handle(self, event):
-        if isinstance(event, ape.MouseEvent):
+        if isinstance(event, retui.MouseEvent):
             if event.button in [event.button.LMB, event.button.RMB] and event.pressed:
                 local_column, local_row = self.local_point(event.coordinates)
                 if local_row is None or local_column is None:
@@ -220,9 +223,9 @@ def main(args):
     ascii_painter = AsciiPainter()
 
     if args.debug:
-        ape.logger.log_file('ascii_painter')
+        retui.logger.log_file('ascii_painter')
 
-    ascii_painter.app = ape.App(log=ape.logger.log)
+    ascii_painter.app = retui.App(log=retui.logger.log)
     ascii_painter.app.color_mode()
 
     height = DEFAULT_HEIGHT
@@ -248,33 +251,33 @@ def main(args):
 
     # TODO: Percent of window, fill
     pane = Pane(app=ascii_painter.app, x=0, y=0, height=100, width=100,
-                alignment=ape.Alignment.LeftTop, dimensions=ape.DimensionsFlag.Relative,
+                alignment=retui.Alignment.TopLeft, dimensions=retui.DimensionsFlag.Relative,
                 borderless=False)
     pane.title = 'ASCII Painter'
 
-    toolbar_alignment = ape.Alignment.LeftTop if args.toolbar_top else ape.Alignment.LeftBottom
+    toolbar_alignment = retui.Alignment.TopLeft if args.toolbar_top else retui.Alignment.BottomLeft
 
     toolbar = Pane(app=ascii_painter.app, x=0, y=0, height=4, width=100,
                    alignment=toolbar_alignment,
-                   dimensions=ape.DimensionsFlag.RelativeWidth)
+                   dimensions=retui.DimensionsFlag.RelativeWidth)
 
     row = -1
     col = -1
     widget = Colors8BitPalette(app=ascii_painter.app, x=col, y=row,
-                               alignment=ape.Alignment.RightBottom,
-                               dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
+                               alignment=retui.Alignment.BottomRight,
+                               dimensions=retui.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
     toolbar.add_widget(widget)
 
     col += 17
     ascii_painter.brush_widget = BrushWidget(app=ascii_painter.app, x=col, y=row,
-                                             alignment=ape.Alignment.RightBottom,
-                                             dimensions=ape.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
+                                             alignment=retui.Alignment.BottomRight,
+                                             dimensions=retui.DimensionsFlag.Absolute, ascii_painter=ascii_painter)
 
     toolbar.add_widget(ascii_painter.brush_widget)
 
     canvas = Canvas(app=ascii_painter.app, x=0, y=0, height=height, width=width,
-                    alignment=ape.Alignment.LeftTop,
-                    dimensions=ape.DimensionsFlag.Absolute,  # Fill fails atm
+                    alignment=retui.Alignment.TopLeft,
+                    dimensions=retui.DimensionsFlag.Absolute,  # Fill fails atm
                     ascii_painter=ascii_painter)
 
     pane.add_widget(toolbar)
@@ -291,7 +294,7 @@ def bind_brush(brush_widget, ascii_painter):
 
 
 def main_json(args):
-    toolbar_alignment = ape.Alignment.LeftTop if args.toolbar_top else ape.Alignment.LeftBottom
+    toolbar_alignment = retui.Alignment.TopLeft if args.toolbar_top else retui.Alignment.BottomLeft
 
     height = DEFAULT_HEIGHT
     width = DEFAULT_WIDTH
@@ -325,14 +328,13 @@ def main_json(args):
     })
 
     if not args.debug:
-        ape.logger.log_file('ascii_painter')
+        retui.logger.log_file('ascii_painter')
 
     ascii_painter.app = helper.app_from_json("ascii_painter.json", globals())
 
-    ascii_painter.app.log = ape.logger.log
+    ascii_painter.app.log = retui.logger.log
     ascii_painter.app.run()
     return 0
-
 
 
 if __name__ == '__main__':

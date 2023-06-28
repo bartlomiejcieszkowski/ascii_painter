@@ -15,7 +15,7 @@
       "y": 0,
       "height": 100,
       "width": 100,
-      "alignment": "LeftTop",
+      "alignment": "TopLeft",
       "dimensions": "Relative"
     },
     {
@@ -63,7 +63,7 @@
       "y": 0,
       "height": "__main#height",
       "width": "__main#width",
-      "alignment": "LeftTop",
+      "alignment": "TopLeft",
       "dimensions": "Absolute",
       "ascii_painter": "__main#ascii_painter"
     }
