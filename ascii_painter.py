@@ -3,9 +3,9 @@ import os.path
 import sys
 from typing import Tuple
 
-if os.path.exists(os.path.abspath("./dependencies/retui")):
+if os.path.exists(os.path.abspath("./dependencies/retui/src")):
     print("retui in submodule, using it")
-    sys.path.append(os.path.abspath("./dependencies/retui"))
+    sys.path.append(os.path.abspath("./dependencies/retui/src"))
 
 import retui
 from retui import helper
