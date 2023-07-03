@@ -320,18 +320,16 @@ def main_json(args):
         # count of lines is height
         pass
 
-    helper.register_app_dict("main", {
+    if not args.debug:
+        retui.logger.log_file('ascii_painter')
+
+    ascii_painter.app = helper.app_from_json("ascii_painter.json", globals(), app_dict={
         "ascii_painter": ascii_painter,
         "toolbar_alignment": toolbar_alignment,
         "height": height,
         "width": width,
         "bind_brush_fun": bind_brush
     })
-
-    if not args.debug:
-        retui.logger.log_file('ascii_painter')
-
-    ascii_painter.app = helper.app_from_json("ascii_painter.json", globals())
 
     ascii_painter.app.log = retui.logger.log
     ascii_painter.app.run()
