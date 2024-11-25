@@ -10,7 +10,7 @@ if os.environ.get("RETUI", "local") == "local" and os.path.exists(os.path.abspat
 
 import retui
 from retui import helper
-from retui.widget import BorderWidget, Pane
+from retui.widgets import BorderWidget, Pane
 from retui import logger
 
 import argparse
@@ -59,15 +59,15 @@ class Colors8BitPalette(BorderWidget):
         height = self.last_dimensions.height - (border * 2)
         start = 0
         end = height
-        offset_str = self.app.brush.MoveRight(offset_cols)
+        offset_str = self.app.brush.move_right(offset_cols)
         color = retui.Color(0, retui.ColorBits.Bit8)
         for h in range(start, end):
-            self.app.brush.MoveCursor(row=offset_rows + h)
+            self.app.brush.move_cursor(row=offset_rows + h)
             line = offset_str
             for i in range(h * 8, (h + 1) * 8):
                 color.color = i
-                line += self.app.brush.BgColor(color=color) + '  '
-            self.app.brush.print(line + self.app.brush.ResetColor(), end='')
+                line += self.app.brush.background_color(color=color) + '  '
+            self.app.brush.print(line + self.app.brush.reset_color(), end='')
 
     def point_to_color(self, point: Tuple[int, int]):
         local_column, local_row = self.local_point(point)
@@ -86,9 +86,9 @@ class Colors8BitPalette(BorderWidget):
                     return
                 # raise Exception(color)
                 if event.button == event.button.LMB:
-                    self.ascii_painter.color.fgcolor = color
+                    self.ascii_painter.color.foreground = color
                 elif event.button == event.button.RMB:
-                    self.ascii_painter.color.bgcolor = color
+                    self.ascii_painter.color.background = color
                 # self.ascii_painter.app.requires_draw = True
                 self.ascii_painter.brush_widget.draw()
 
@@ -126,17 +126,17 @@ class BrushWidget(BorderWidget):
         height = self.last_dimensions.height - (border * 2)
         start = 0
         end = height
-        offset_str = self.app.brush.MoveRight(offset_cols)
-        # fgcolor
+        offset_str = self.app.brush.move_right(offset_cols)
 
-        self.app.brush.MoveCursor(row=offset_rows)
-        self.app.brush.print(offset_str + self.app.brush.BgColor(
-            color=self.ascii_painter.color.fgcolor) + ' ' * width + self.app.brush.ResetColor(), end='')
+        # fgcolor
+        self.app.brush.move_cursor(row=offset_rows)
+        self.app.brush.print(offset_str + self.app.brush.background_color(
+            color=self.ascii_painter.color.foreground) + ' ' * width + self.app.brush.reset_color(), end='')
 
         # bgcolor
-        self.app.brush.MoveCursor(row=offset_rows + 1)
-        self.app.brush.print(offset_str + self.app.brush.BgColor(
-            color=self.ascii_painter.color.bgcolor) + ' ' * width + self.app.brush.ResetColor(), end='')
+        self.app.brush.move_cursor(row=offset_rows + 1)
+        self.app.brush.print(offset_str + self.app.brush.background_color(
+            color=self.ascii_painter.color.background) + ' ' * width + self.app.brush.reset_color(), end='')
 
 
 class CanvasCell:
@@ -180,25 +180,25 @@ class Canvas(BorderWidget):
         border = 0 if self.borderless else 1
         offset_rows = self.last_dimensions.row + border
         offset_cols = self.last_dimensions.column + border
-        offset_str = self.app.brush.MoveRight(offset_cols)
+        offset_str = self.app.brush.move_right(offset_cols)
         for y in range(self.canvas_height):
-            self.app.brush.MoveCursor(row=offset_rows + y)
+            self.app.brush.move_cursor(row=offset_rows + y)
 
             row = self.cells[y]
             line = offset_str
             for x in range(self.canvas_width):
-                line += self.app.brush.FgBgColor(row[x].color) + row[x].value[0]
-            line += self.app.brush.ResetColor()
+                line += self.app.brush.color(row[x].color) + row[x].value[0]
+            line += self.app.brush.reset_color()
             self.app.brush.print(line, end='')
 
     def draw_cell(self, row: int, column: int):
         border = 0 if self.borderless else 1
         offset_rows = self.last_dimensions.row + border
         offset_cols = self.last_dimensions.column + border
-        offset_str = self.app.brush.MoveRight(offset_cols + column)
-        self.app.brush.MoveCursor(row=offset_rows + row)
+        offset_str = self.app.brush.move_right(offset_cols + column)
+        self.app.brush.move_cursor(row=offset_rows + row)
         cell = self.cells[row][column]
-        line = offset_str + self.app.brush.FgBgColor(cell.color) + cell.value + self.app.brush.ResetColor()
+        line = offset_str + self.app.brush.color(cell.color) + cell.value + self.app.brush.reset_color()
         self.app.brush.print(line, end='')
 
     def handle(self, event):
@@ -208,10 +208,10 @@ class Canvas(BorderWidget):
                 if local_row is None or local_column is None:
                     return
 
-                brush_color = self.ascii_painter.color.fgcolor if event.button == event.button.LMB else self.ascii_painter.color.bgcolor
+                brush_color = self.ascii_painter.color.foreground if event.button == event.button.LMB else self.ascii_painter.color.background
 
-                self.cells[local_row][local_column].color.fgcolor = brush_color
-                self.cells[local_row][local_column].color.bgcolor = brush_color
+                self.cells[local_row][local_column].color.foreground = brush_color
+                self.cells[local_row][local_column].color.background = brush_color
 
                 self.draw_cell(local_row, local_column)
 

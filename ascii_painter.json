@@ -36,7 +36,7 @@
       "type": "Colors8BitPalette",
       "x": -1,
       "y": -1,
-      "alignment": "RightBottom",
+      "alignment": "BottomRight",
       "dimensions": "Absolute",
       "ascii_painter": "__main#ascii_painter"
     },
@@ -46,7 +46,7 @@
       "type": "BrushWidget",
       "x": 16,
       "y": -1,
-      "alignment": "RightBottom",
+      "alignment": "BottomRight",
       "dimensions": "Absolute",
       "ascii_painter": "__main#ascii_painter",
       "post_callbacks": [{

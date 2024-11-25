@@ -1,4 +1,4 @@
 [submodule "dependencies/retui"]
 	path = dependencies/retui
-	url = git@github.com:bartlomiejcieszkowski/retui.git
+	url = https://github.com/bartlomiejcieszkowski/retui.git
 	branch = main
