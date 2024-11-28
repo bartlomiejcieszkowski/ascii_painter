@@ -3,17 +3,20 @@ import os.path
 import sys
 from typing import Tuple
 
+RETUI_PATH = os.environ.get("RETUI_PATH", None)
+if RETUI_PATH and os.path.exists(os.path.realpath(os.path.join(RETUI_PATH, "src"))):
+    print(f"retui from env var RETUI_PATH={RETUI_PATH}")
+    RETUI_PATH = os.path.realpath(os.path.join(RETUI_PATH, "src"))
+    sys.path.append(RETUI_PATH)
 
-if os.environ.get("RETUI", "local") == "local" and os.path.exists(os.path.abspath("./dependencies/retui/src")):
-    print("retui in submodule, using it")
-    sys.path.append(os.path.abspath("./dependencies/retui/src"))
 
 import retui
 from retui import helper
 from retui.widgets import BorderWidget, Pane
-from retui import logger
 
 import argparse
+
+import logging
 
 
 class AsciiPainter:
@@ -224,9 +227,9 @@ def main(args):
     ascii_painter = AsciiPainter()
 
     if args.debug:
-        retui.logger.log_file('ascii_painter')
+        logging.basicConfig(filename="ascii_painter.log")
 
-    ascii_painter.app = retui.App(log=retui.logger.log)
+    ascii_painter.app = retui.App()
     ascii_painter.app.color_mode()
 
     height = DEFAULT_HEIGHT
