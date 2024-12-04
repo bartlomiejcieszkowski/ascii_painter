@@ -15,7 +15,7 @@
       "y": 0,
       "height": 100,
       "width": 100,
-      "alignment": "TopLeft",
+      "dock": "FILL",
       "dimensions": "Relative"
     },
     {
@@ -25,9 +25,9 @@
       "type": "Pane",
       "x": 0,
       "y": 0,
-      "height": 4,
+      "height": 6,
       "width": 100,
-      "alignment": "__main#toolbar_alignment",
+      "dock": "__main#toolbar_dock",
       "dimensions": "RelativeWidth"
     },
     {
@@ -36,7 +36,7 @@
       "type": "Colors8BitPalette",
       "x": -1,
       "y": -1,
-      "alignment": "BottomRight",
+      "dock": "RIGHT",
       "dimensions": "Absolute",
       "ascii_painter": "__main#ascii_painter"
     },
@@ -46,7 +46,7 @@
       "type": "BrushWidget",
       "x": 16,
       "y": -1,
-      "alignment": "BottomRight",
+      "dock": "RIGHT",
       "dimensions": "Absolute",
       "ascii_painter": "__main#ascii_painter",
       "post_callbacks": [{
@@ -63,7 +63,7 @@
       "y": 0,
       "height": "__main#height",
       "width": "__main#width",
-      "alignment": "TopLeft",
+      "dock": "FILL",
       "dimensions": "Absolute",
       "ascii_painter": "__main#ascii_painter"
     }
